@@ -3,6 +3,7 @@ import {jwtDecode} from 'jwt-decode';
 import api from '../api';
 import { REFRESH_TOKEN,ACCESS_TOKEN } from '../constants';
 import {useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 
 function ProtectedRoute({children}) {
     
@@ -10,11 +11,9 @@ function ProtectedRoute({children}) {
     
     useEffect(() => {
         const checkAuth = async () => {
-            try {
+    
                 await auth();
-            } catch (error) {
-                setIsAuthorized(false);
-            }
+           
         };
 
         checkAuth();
@@ -65,6 +64,9 @@ function ProtectedRoute({children}) {
     }
     return isAuthorized ? children : <Navigate to="/login" />;
     
-
 }
+ProtectedRoute.propTypes = {
+    children: PropTypes.node.isRequired,
+};
+
 export default ProtectedRoute;

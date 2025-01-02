@@ -1,12 +1,6 @@
-import React from 'react';
-
+import Form from '../components/Form';
 const Login = () => {
-    return (
-        <div>
-            <h1>Login</h1>
-
-        </div>
-    );
+    return <Form route="api/token" method="login" />
 };
 
 export default Login;
