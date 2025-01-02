@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 # online-library
 master project 
 =======
