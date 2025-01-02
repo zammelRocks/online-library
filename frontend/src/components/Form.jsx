@@ -8,7 +8,7 @@ import "../styles/Form.css";
 function Form({ route, method }) {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
-    const [loading, setLoading] = useState(false);
+    const [ loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
     const name = method === "login" ? "Login" : "Register";
@@ -53,7 +53,7 @@ function Form({ route, method }) {
             <button className="form-button" type="submit">
                 {name}
             </button>
-        </form>{loading }?:(<div>loading....</div>)</>
+        </form>{loading}</>
 );
 
 }
