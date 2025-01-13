@@ -1,3 +1,7 @@
+
+
+master project 
+=======
 # Online Library
 
 This project is an online library application built with Django, allowing users to read books retrieved from a database.
@@ -60,3 +64,4 @@ online-library
 ## Contributing
 
 Feel free to submit issues or pull requests for improvements or bug fixes.
+>>>>>>> 2b36714 ({initial_commit_message})
