@@ -1,38 +1,41 @@
 import gradio as gr
 import pandas as pd
-from PIL import Image
 
 # Sample book data - in a real application, this would come from a database
 BOOKS = [
     {
-        "title": "Pride and Prejudice",
-        "author": "Jane Austen",
-        "description": "A romantic novel of manners...",
-        "content": "It is a truth universally acknowledged...",
+        "Titre": "Pride and Prejudice",
+        "Auteur": "Jane Austen",
+        "Nb Page": "513",
+        "Prix": "200",
     },
     {
-        "title": "1984",
-        "author": "George Orwell",
-        "description": "A dystopian social science fiction novel...",
-        "content": "It was a bright cold day in April...",
+        "Titre": "1984",
+        "Auteur": "George Orwell",
+        "Nb Page": "120",
+        "Prix": "30",
     },
 ]
 
 
-def view_books():
-    """Returns the list of available books"""
-    books_df = pd.DataFrame(BOOKS)
-    return books_df
+df = pd.DataFrame(BOOKS)
 
 
-def read_book(title):
+def read_book(title, db):
     """Returns the content of a selected book"""
-    for book in BOOKS:
-        if book["title"] == title:
-            return (
-                f"Title: {book['title']}\nAuthor: {book['author']}\n\n{book['content']}"
-            )
-    return "Book not found"
+    book = db[db["Titre"] == title].iloc[0].to_dict()
+    out = ""
+    for key, value in book.items():
+        out += f"**{key}** : {value}\n\n"
+    return out.strip()
+
+
+def merge_with_db(db, new_db, book_input):
+    new_db = pd.read_excel(new_db)
+    new_db = new_db[["Titre", "Auteur", "Nb Page", "Prix"]]
+    concatenated_db = pd.concat([db, new_db], ignore_index=True, axis=0)
+    titles = list(concatenated_db["Titre"])
+    return concatenated_db, gr.update(choices=titles, value=book_input)
 
 
 # Create the Gradio interface
@@ -40,14 +43,21 @@ with gr.Blocks(title="Online Library") as demo:
     gr.Markdown("# Welcome to the Online Library")
 
     with gr.Tab("Browse Books"):
-        gr.Dataframe(value=view_books, interactive=False, every=None)
+        new_db = gr.File(label="Upload a csv or an xlsx database of books")
+        merge_with_db_button = gr.Button("Process database")
+        db = gr.Dataframe(value=df, interactive=False, every=None)
 
     with gr.Tab("Read Book"):
         book_input = gr.Dropdown(
-            choices=[book["title"] for book in BOOKS], label="Select a book to read"
+            choices=list(df["Titre"]),
+            label="Select a book to read",
         )
-        book_content = gr.TextArea(label="Book Content", interactive=False)
-        book_input.change(fn=read_book, inputs=[book_input], outputs=[book_content])
+        book_content = gr.Markdown(label="Book Content")
+        book_input.change(fn=read_book, inputs=[book_input, db], outputs=[book_content])
+
+    merge_with_db_button.click(
+        fn=merge_with_db, inputs=[db, new_db, book_input], outputs=[db, book_input]
+    )
 
 if __name__ == "__main__":
     demo.launch()
